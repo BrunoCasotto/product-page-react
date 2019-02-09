@@ -4,7 +4,7 @@ import groovy.transform.Field
 
 @Field def projectName = 'product-page-react'
 
-node('slave') {
+node {
   deleteDir()
   gitCheckout()
   installDependencies()
