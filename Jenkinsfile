@@ -11,8 +11,8 @@ node {
 }
 
 def gitCheckout() {
-  stage ('checkout') {
-    echo "checkout for hmg commitId: ${commitId}"
+    if (commitId) {
+    echo "checkout commitId: ${commitId}"
     checkout([
       $class                           : 'GitSCM',
       branches                         : [[name: commitId]],
@@ -20,6 +20,11 @@ def gitCheckout() {
       submoduleCfg                     : [],
       userRemoteConfigs                : []
     ])
+  } else {
+    stage ('GIT Checkout') {
+      sh 'git rev-parse HEAD > commit-id'
+      commitId = readFile('commit-id').trim()
+    }
   }
 }
 
