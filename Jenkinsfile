@@ -1,35 +1,16 @@
-#!/usr/bin/env groovy
+pipeline {
+  agent any
 
-import groovy.transform.Field
-
-@Field def projectName = 'product-page-react'
-
-node {
-  deleteDir()
-  gitCheckout()
-  installDependencies()
-}
-
-def gitCheckout() {
-    if (commitId) {
-    echo "checkout commitId: ${commitId}"
-    checkout([
-      $class                           : 'GitSCM',
-      branches                         : [[name: commitId]],
-      doGenerateSubmoduleConfigurations: false,
-      submoduleCfg                     : [],
-      userRemoteConfigs                : []
-    ])
-  } else {
-    stage ('GIT Checkout') {
-      sh 'git rev-parse HEAD > commit-id'
-      commitId = readFile('commit-id').trim()
-    }
-  }
-}
-
-def installDependencies() {
-  stage ('Install Dependencies') {
-    sh 'npm i'
+  stages {
+      stage('Install dependencies') {
+          steps {
+              sh 'cd product-page-react ; sh npm i'
+          }
+      }
+      stage('Build') {
+          steps {
+              sh 'echo "Deploy..."; npm run build'
+          }
+      }
   }
 }
