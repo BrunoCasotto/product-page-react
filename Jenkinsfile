@@ -4,9 +4,27 @@ import groovy.transform.Field
 
 @Field def projectName = 'product-page-react'
 
-stage 'Checkout'
-
 node('slave') {
   deleteDir()
-  checkout scm
+  gitCheckout()
+  installDependencies()
+}
+
+def gitCheckout() {
+  stage ('checkout') {
+    echo "checkout for hmg commitId: ${commitId}"
+    checkout([
+      $class                           : 'GitSCM',
+      branches                         : [[name: commitId]],
+      doGenerateSubmoduleConfigurations: false,
+      submoduleCfg                     : [],
+      userRemoteConfigs                : []
+    ])
+  }
+}
+
+def installDependencies() {
+  stage ('Install Dependencies') {
+    sh 'npm i'
+  }
 }
